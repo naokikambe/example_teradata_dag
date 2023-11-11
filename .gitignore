@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+/.venv/
+
+# Compiled Python files
+*.pyc
+
+# Python debugger files
+*.pyo
+*.pyc
+__pycache__/
+*.pyd
+*.pyw
+*.pyo
+*.pyz
+*.pyz/
+
+# .vscode folder
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# pyenv
+.python-version
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IDE (e.g., PyCharm)
+.idea/
+
+# Environment
+.env
+
+# Test reports
+htmlcov/
+
+# Coverage
+.coverage
+
+# Sphinx documentation
+docs/_build/
+
+# PyInstaller
+dist/
+build/
+*.spec
