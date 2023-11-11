@@ -1,6 +1,3 @@
-Certainly! Here's the full content in a single markdown file:
-
-```markdown
 # Example Airflow DAG
 
 ## Description
@@ -76,6 +73,3 @@ If you have any questions or feedback, please feel free to reach out to [your.em
 
 - [Apache Airflow](https://airflow.apache.org/)
 - [Teradata](https://www.teradata.com/)
-```
-
-Copy and paste this content into a file named `README.md` in the root of your project repository. Adjust the placeholders and URLs based on your actual project information.
