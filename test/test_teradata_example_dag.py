@@ -1,5 +1,6 @@
 import os
 import unittest
+import time
 from unittest.mock import patch, MagicMock
 from airflow.models import DagBag
 
@@ -72,11 +73,29 @@ class TestTeradataExampleDAG(unittest.TestCase):
         # Call the function under test
         teradata_query_callback()
 
-        # Assertions
         mock_connect.assert_called_once_with(host='your_teradata_hostname', user='your_teradata_username', password='your_teradata_password')
         mock_connection.cursor.assert_called_once()
         mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;")
         mock_cursor.fetchall.assert_called_once()
+
+    @patch('teradatasql.connect')
+    def test_teradata_query_callback_execute_failure(self, mock_connect):
+        import sys
+        sys.path.append('./dag')
+        from teradata_example_dag import teradata_query_callback
+        mock_cursor = MagicMock()
+        mock_cursor.execute.return_value = 1
+
+        mock_connection = MagicMock()
+        mock_connection.cursor.return_value = mock_cursor
+        mock_connect.return_value.__enter__.return_value = mock_connection
+
+        with self.assertRaises(Exception):
+            teradata_query_callback()
+
+        mock_connect.assert_called_once_with(host='your_teradata_hostname', user='your_teradata_username', password='your_teradata_password')
+        mock_connection.cursor.assert_called_once()
+        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;")
 
 if __name__ == '__main__':
     unittest.main()
