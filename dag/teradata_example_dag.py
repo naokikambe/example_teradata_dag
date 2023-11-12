@@ -45,7 +45,7 @@ def teradata_query_callback(**kwargs):
     print(f"Teradata Connection Time: {connection_time} seconds")
 
     # Assert that the connection time is less than or equal to 60 seconds
-    assert connection_time_seconds <= 60, "Connection time exceeds 60 seconds!"
+    assert connection_time <= 60, "Connection time exceeds 60 seconds!"
 
 # Define default_args dictionary to specify default parameters for the DAG
 default_args = {
