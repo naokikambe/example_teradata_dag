@@ -1,3 +1,14 @@
+"""
+example_dag_with_teradata.py
+
+This script defines an Airflow DAG that consists of three tasks:
+- task1: DummyOperator
+- task2: PythonOperator that executes a Teradata SQL query
+- task3: DummyOperator
+
+The DAG runs daily and is configured with default parameters.
+"""
+
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
@@ -5,9 +16,18 @@ from airflow.operators.python_operator import PythonOperator
 import teradatasql
 import time
 
-# Define a function to connect to Teradata and execute a SQL query
 def teradata_query_callback(**kwargs):
+    """
+    teradata_query_callback(**kwargs)
 
+    This function connects to Teradata and executes a SQL query.
+
+    Args:
+        **kwargs: Context passed by Airflow.
+
+    Returns:
+        None
+    """
     # Directly assign Teradata connection details
     login = 'your_teradata_username'
     password = 'your_teradata_password'
@@ -28,7 +48,6 @@ def teradata_query_callback(**kwargs):
         cursor = connection.cursor()
         query = "SELECT * FROM your_table;"
         return_code = cursor.execute(query)
-
         # # Get the path to the SQL file using os.path.join
         # sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', 'query.sql')
         # # Read SQL query from the file
@@ -45,7 +64,6 @@ def teradata_query_callback(**kwargs):
         result = cursor.fetchall()
         for row in result:
             print(row)
-
 
 
 # Define default_args dictionary to specify default parameters for the DAG
