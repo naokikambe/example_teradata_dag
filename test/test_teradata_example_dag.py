@@ -54,13 +54,17 @@ class TestTeradataExampleDAG(unittest.TestCase):
         mock_cursor.execute.return_value = 0
         mock_cursor.fetchall.return_value = [(1, 'data1'), (2, 'data2')]
 
-        teradata_query_callback()
+        mock_open = MagicMock()
+        mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
+        with patch('builtins.open', mock_open):
+            # Call the function under test
+            teradata_query_callback()
 
         mock_connect.assert_called_once_with(host='your_teradata_hostname',
                                              user='your_teradata_username',
                                              password='your_teradata_password')
         mock_connection.cursor.assert_called_once()
-        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;\n")
+        mock_cursor.execute.assert_called_once_with("SELECT * FROM another_table;")
         mock_cursor.fetchall.assert_called_once()
 
     @patch('teradatasql.connect')
@@ -75,15 +79,20 @@ class TestTeradataExampleDAG(unittest.TestCase):
         mock_cursor.fetchall.return_value = []
 
         with self.assertRaises(Exception) as context:
-            teradata_query_callback()
+            mock_open = MagicMock()
+            mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
+            with patch('builtins.open', mock_open):
+                # Call the function under test
+                teradata_query_callback()
 
         self.assertEquals("Teradata Query Execution Failed with Return Code: 1",
                           str(context.exception))
+
         mock_connect.assert_called_once_with(host='your_teradata_hostname',
                                              user='your_teradata_username',
                                              password='your_teradata_password')
         mock_connection.cursor.assert_called_once()
-        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;\n")
+        mock_cursor.execute.assert_called_once_with("SELECT * FROM another_table;")
         mock_cursor.fetchall.assert_not_called()
 
     @patch('teradatasql.connect')
