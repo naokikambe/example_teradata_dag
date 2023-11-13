@@ -60,7 +60,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
                                              user='your_teradata_username',
                                              password='your_teradata_password')
         mock_connection.cursor.assert_called_once()
-        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;")
+        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;\n")
         mock_cursor.fetchall.assert_called_once()
 
     @patch('teradatasql.connect')
@@ -83,7 +83,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
                                              user='your_teradata_username',
                                              password='your_teradata_password')
         mock_connection.cursor.assert_called_once()
-        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;")
+        mock_cursor.execute.assert_called_once_with("SELECT * FROM your_table;\n")
         mock_cursor.fetchall.assert_not_called()
 
     @patch('teradatasql.connect')

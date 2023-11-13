@@ -15,6 +15,8 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 import teradatasql
 import time
+import os
+import sys
 
 def teradata_query_callback(**kwargs):
     """
@@ -44,15 +46,16 @@ def teradata_query_callback(**kwargs):
         # Assert that the connection time is less than or equal to 60 seconds
         assert connection_time <= 60, "Connection time exceeds 60 seconds!"
 
-        # Execute a SQL query (replace with your actual query)
+        # Get the path to the SQL file using os.path.join
+        sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', 'query.sql')
+        # Read SQL query from the file
+        query = ""
+        with open(sql_file_path, 'r') as sql_file:
+            query = sql_file.read()
+
+        # Execute a SQL query
         cursor = connection.cursor()
-        query = "SELECT * FROM your_table;"
         return_code = cursor.execute(query)
-        # # Get the path to the SQL file using os.path.join
-        # sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', 'query.sql')
-        # # Read SQL query from the file
-        # with open(sql_file_path, 'r') as sql_file:
-        #     query = sql_file.read()
 
         # Log the return code
         print(f"Teradata Return Code: {return_code}")
