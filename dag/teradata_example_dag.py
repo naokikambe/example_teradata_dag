@@ -16,6 +16,14 @@ def teradata_query_callback(**kwargs):
     start_time = time.time()
     # Connect to Teradata using "with" statement
     with teradatasql.connect(host=host, user=login, password=password) as connection:
+        end_time = time.time()
+        connection_time = end_time - start_time
+
+        # Log connection time
+        print(f"Teradata Connection Time: {connection_time} seconds")
+        # Assert that the connection time is less than or equal to 60 seconds
+        assert connection_time <= 60, "Connection time exceeds 60 seconds!"
+
         # Execute a SQL query (replace with your actual query)
         cursor = connection.cursor()
         query = "SELECT * FROM your_table;"
@@ -27,25 +35,18 @@ def teradata_query_callback(**kwargs):
         # with open(sql_file_path, 'r') as sql_file:
         #     query = sql_file.read()
 
-        # Log the result
-        result = cursor.fetchall()
-        for row in result:
-            print(row)
-
         # Log the return code
         print(f"Teradata Return Code: {return_code}")
 
         # Assert that the return code is zero
         assert return_code == 0, f"Teradata Query Execution Failed with Return Code: {return_code}"
 
-    end_time = time.time()
-    connection_time = end_time - start_time
+        # Log the result
+        result = cursor.fetchall()
+        for row in result:
+            print(row)
 
-    # Log connection time
-    print(f"Teradata Connection Time: {connection_time} seconds")
 
-    # Assert that the connection time is less than or equal to 60 seconds
-    assert connection_time <= 60, "Connection time exceeds 60 seconds!"
 
 # Define default_args dictionary to specify default parameters for the DAG
 default_args = {
