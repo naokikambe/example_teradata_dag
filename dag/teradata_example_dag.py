@@ -39,8 +39,9 @@ def teradata_query_callback(**kwargs):
     # Connect to Teradata using "with" statement
     with teradatasql.connect(host=host, user=login, password=password) as connection:
         end_time = time.time()
-        connection_time = end_time - start_time
+        assert connection.ping(), "Connection is not available."
 
+        connection_time = end_time - start_time
         # Log connection time
         print(f"Teradata Connection Time: {connection_time} seconds")
         # Assert that the connection time is less than or equal to 60 seconds
