@@ -50,8 +50,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connect.return_value.__enter__.return_value = mock_connection
-        mock_connection.cursor.return_value = mock_cursor
-        mock_connection.ping.return_value = True
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
         mock_cursor.execute.return_value = 0
         mock_cursor.fetchall.return_value = [(1, 'data1'), (2, 'data2')]
 
@@ -75,8 +74,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connect.return_value.__enter__.return_value = mock_connection
-        mock_connection.cursor.return_value = mock_cursor
-        mock_connection.ping.return_value = True
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
         mock_cursor.execute.return_value = 1
         mock_cursor.fetchall.return_value = []
 
