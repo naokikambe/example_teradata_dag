@@ -48,7 +48,6 @@ def teradata_query_callback(**kwargs):
         # Get the path to the SQL file using os.path.join
         sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', 'query.sql')
         # Read SQL query from the file
-        query = ""
         with open(sql_file_path, 'r') as sql_file:
             query = sql_file.read()
 
