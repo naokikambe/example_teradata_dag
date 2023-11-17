@@ -57,3 +57,5 @@ docs/_build/
 dist/
 build/
 *.spec
+
+.airflow
