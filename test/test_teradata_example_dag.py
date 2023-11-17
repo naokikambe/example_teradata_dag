@@ -45,8 +45,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
 
     @patch('teradatasql.connect')
     def test_teradata_query_callback(self, mock_connect):
-        from teradata_example_dag import teradata_query_callback
-
+        teradata_query_callback = self.dag.get_task("task2").python_callable
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connect.return_value.__enter__.return_value = mock_connection
@@ -69,7 +68,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
 
     @patch('teradatasql.connect')
     def test_teradata_query_callback_execute_failure(self, mock_connect):
-        from teradata_example_dag import teradata_query_callback
+        teradata_query_callback = self.dag.get_task("task2").python_callable
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
@@ -98,7 +97,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
     @patch('teradatasql.connect')
     @patch('time.time', side_effect=[0, 70])
     def test_teradata_query_callback_exceed_time_limit(self, mock_time, mock_connect):
-        from teradata_example_dag import teradata_query_callback
+        teradata_query_callback = self.dag.get_task("task2").python_callable
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
