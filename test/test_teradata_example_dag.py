@@ -43,81 +43,55 @@ class TestTeradataExampleDAG(unittest.TestCase):
             self.assertEqual(set(downstream_task_ids),
                              set(dependencies), f'Incorrect dependencies for {task_id}')
 
-    @patch('teradatasql.connect')
-    def test_teradata_query_callback(self, mock_connect):
-        teradata_query_callback = self.dag.get_task("task2").python_callable
-        mock_connection = MagicMock()
-        mock_cursor = MagicMock()
-        mock_connect.return_value.__enter__.return_value = mock_connection
-        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
-        mock_cursor.execute.return_value = 0
-        mock_cursor.fetchall.return_value = [(1, 'data1'), (2, 'data2')]
-
-        mock_open = MagicMock()
+    @patch('teradatasql.connect', spec=True)
+    @patch('builtins.open', spec=True)
+    def test_teradata_query_callback(self, mock_open, mock_conn):
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.return_value = 0
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.fetchall.return_value = [(1, 'data1'), (2, 'data2')]
         mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
-        with patch('builtins.open', mock_open):
-            # Call the function under test
-            teradata_query_callback()
+        self.dag.get_task("task2").python_callable()
+        mock_conn.assert_called_once_with(host='your_teradata_hostname',
+                                          user='your_teradata_username',
+                                          password='your_teradata_password')
+        mock_open.return_value.__enter__.return_value.read.assert_called_once()
+        mock_conn.return_value.__enter__.return_value.cursor.assert_called_once()
 
-        mock_connect.assert_called_once_with(host='your_teradata_hostname',
-                                             user='your_teradata_username',
-                                             password='your_teradata_password')
-        mock_connection.cursor.assert_called_once()
-        mock_cursor.execute.assert_called_once_with("SELECT * FROM another_table;")
-        mock_cursor.fetchall.assert_called_once()
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.assert_called_once_with("SELECT * FROM another_table;")
 
-    @patch('teradatasql.connect')
-    def test_teradata_query_callback_execute_failure(self, mock_connect):
-        teradata_query_callback = self.dag.get_task("task2").python_callable
-
-        mock_connection = MagicMock()
-        mock_cursor = MagicMock()
-        mock_connect.return_value.__enter__.return_value = mock_connection
-        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
-        mock_cursor.execute.return_value = 1
-        mock_cursor.fetchall.return_value = []
-
+    @patch('teradatasql.connect', spec=True)
+    @patch('builtins.open', spec=True)
+    def test_teradata_query_callback_execute_failure(self, mock_open, mock_conn):
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.return_value = 1
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.fetchall.return_value = []
+        mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
         with self.assertRaises(Exception) as context:
-            mock_open = MagicMock()
-            mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
-            with patch('builtins.open', mock_open):
-                # Call the function under test
-                teradata_query_callback()
-
+            self.dag.get_task("task2").python_callable()
         self.assertEquals("Teradata Query Execution Failed with Return Code: 1",
                           str(context.exception))
+        mock_conn.assert_called_once_with(host='your_teradata_hostname',
+                                          user='your_teradata_username',
+                                          password='your_teradata_password')
+        mock_open.return_value.__enter__.return_value.read.assert_called_once()
+        mock_conn.return_value.__enter__.return_value.cursor.assert_called_once()
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.assert_called_once_with("SELECT * FROM another_table;")
 
-        mock_connect.assert_called_once_with(host='your_teradata_hostname',
-                                             user='your_teradata_username',
-                                             password='your_teradata_password')
-        mock_connection.cursor.assert_called_once()
-        mock_cursor.execute.assert_called_once_with("SELECT * FROM another_table;")
-        mock_cursor.fetchall.assert_not_called()
-
-    @patch('teradatasql.connect')
+    @patch('teradatasql.connect', spec=True)
+    @patch('builtins.open', spec=True)
     @patch('time.time', side_effect=[0, 70])
-    def test_teradata_query_callback_exceed_time_limit(self, mock_time, mock_connect):
-        teradata_query_callback = self.dag.get_task("task2").python_callable
-
-        mock_connection = MagicMock()
-        mock_cursor = MagicMock()
-        mock_connect.return_value.__enter__.return_value = mock_connection
-        mock_connection.cursor.return_value = mock_cursor
-        mock_connection.ping.return_value = True
-        mock_cursor.execute.return_value = 1
-        mock_cursor.fetchall.return_value = []
-
+    def test_teradata_query_callback_exceed_time_limit(self, mock_time, mock_open, mock_conn):
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.return_value = 0
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.fetchall.return_value = [(1, 'data1'), (2, 'data2')]
+        mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
         with self.assertRaises(AssertionError) as context:
-            teradata_query_callback()
-
+            self.dag.get_task("task2").python_callable()
         self.assertEquals("Connection time exceeds 60 seconds!",
                           str(context.exception))
-        mock_connect.assert_called_once_with(host='your_teradata_hostname',
-                                             user='your_teradata_username',
-                                             password='your_teradata_password')
-        mock_connection.cursor.assert_not_called()
-        mock_cursor.execute.assert_not_called()
-        mock_cursor.fetchall.assert_not_called()
+        mock_conn.assert_called_once_with(host='your_teradata_hostname',
+                                          user='your_teradata_username',
+                                          password='your_teradata_password')
+        mock_open.return_value.__enter__.return_value.read.assert_not_called()
+        mock_conn.return_value.__enter__.return_value.cursor.assert_not_called()
+        mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.assert_not_called()
 
 
 if __name__ == '__main__':
