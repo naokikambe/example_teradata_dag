@@ -91,6 +91,9 @@ def example_dag_with_teradata():
         task_id='task2',
         python_callable=teradata_query_callback,
         provide_context=True,
+        retries=15,
+        retry_delay=timedelta(seconds=0),
+        execution_timeout=timedelta(minutes=15),
     )
 
     task3 = DummyOperator(

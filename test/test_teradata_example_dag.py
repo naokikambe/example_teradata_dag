@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+from datetime import timedelta
 from unittest.mock import patch, MagicMock
 from airflow.models import DagBag
 
@@ -28,6 +29,12 @@ class TestTeradataExampleDAG(unittest.TestCase):
 
     def test_task_count(self):
         self.assertEqual(len(self.dag.tasks), 3)
+
+    def test_task_params(self):
+        task = self.dag.get_task("task2")
+        self.assertEqual(15, task.retries)
+        self.assertEqual(timedelta(seconds=0), task.retry_delay)
+        self.assertEqual(timedelta(minutes=15), task.execution_timeout)
 
     def test_task_dependencies(self):
         task_ids = [task.task_id for task in self.dag.tasks]
