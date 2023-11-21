@@ -1,0 +1,5 @@
+{
+    "login": "username",
+    "password": "passw0rd",
+    "your_teradata_hostname": "my.tera.example.com"
+}
