@@ -10,5 +10,5 @@ dag-test: $(VENV_DIR) $(AIRFLOW_HOME) $(CONFIG) $(DAG_DIR)
 	. $(VENV_DIR)/bin/activate && \
 	export AIRFLOW_HOME=$(AIRFLOW_HOME) && \
 	airflow variables import $(CONFIG) && \
-	airflow dags test -S $(DAG_DIR) $(DAG_ID)
-
+	airflow dags test -S $(DAG_DIR) $(DAG_ID) ; \
+	deactivate
