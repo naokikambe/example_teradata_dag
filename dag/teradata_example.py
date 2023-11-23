@@ -25,6 +25,8 @@ def teradata_query_callback(**kwargs):
     host = 'your_teradata_hostname'
 
     start_time = time.time()
+    dag_id = kwargs['dag'].dag_id
+    assert dag_id == 'example_dag_with_teradata', "check dag id"
     # Connect to Teradata using "with" statement
     with teradatasql.connect(host=host, user=login, password=password) as connection:
         end_time = time.time()
