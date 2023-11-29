@@ -20,42 +20,51 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from teradata_example import read_file_content, teradata_query_callback
 
-@dag(
-    default_args={
-        'owner': 'airflow',
-        'depends_on_past': False,
-        'start_date': datetime(2023, 1, 1),
-        'email_on_failure': False,
-        'email_on_retry': False,
-        'retries': 1,
-        'retry_delay': timedelta(minutes=5),
+configs = {
+    "example_dag_with_teradata": {
+        "retries": 1,
+        "schedule_interval": timedelta(minutes=5),
+        "description": 'A simple example DAG with Teradata connection',
+        "doc_md": read_file_content('README.md'),
     },
-    schedule_interval=timedelta(days=1),  # Run the DAG daily
-    description='A simple example DAG with Teradata connection',
-    doc_md=read_file_content('README.md'),
-)
-def example_dag_with_teradata():
+}
 
-    # Define two tasks: task1, and task2
-    task1 = DummyOperator(
-        task_id='task1',
+for dag_id, conf in configs.items():
+    @dag(
+        default_args={
+            'owner': 'airflow',
+            'depends_on_past': False,
+            'start_date': datetime(2023, 1, 1),
+            'email_on_failure': False,
+            'email_on_retry': False,
+            'retries': conf.get("retries"),
+            'retry_delay': timedelta(minutes=5),
+        },
+        dag_id=dag_id,
+        schedule_interval=conf.get("schedule_interval"),  # Run the DAG daily
+        description=conf.get("description"),
+        doc_md=conf.get("doc_md"),
     )
+    def generate_dag():
+        task1 = DummyOperator(
+            task_id='task1',
+        )
 
-    task2 = PythonOperator(
-        task_id='task2',
-        python_callable=teradata_query_callback,
-        provide_context=True,
-        retries=15,
-        retry_delay=timedelta(seconds=0),
-        execution_timeout=timedelta(minutes=15),
-    )
+        task2 = PythonOperator(
+            task_id='task2',
+            python_callable=teradata_query_callback,
+            provide_context=True,
+            retries=15,
+            retry_delay=timedelta(seconds=0),
+            execution_timeout=timedelta(minutes=15),
+        )
 
-    task3 = DummyOperator(
-        task_id='task3',
-    )
+        task3 = DummyOperator(
+            task_id='task3',
+        )
 
-    # Set up the task dependencies
-    task1 >> task2  # task2 depends on task1
-    task2 >> task3  # task3 depends on task2
+        # Set up the task dependencies
+        task1 >> task2  # task2 depends on task1
+        task2 >> task3  # task3 depends on task2
 
-example_dag = example_dag_with_teradata()
+    dag = generate_dag()
