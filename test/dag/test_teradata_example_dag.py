@@ -26,6 +26,10 @@ class TestTeradataExampleDAG(unittest.TestCase):
         self.assertIsNotNone(self.dag, 'DAG is None. Loading failed.')
         self.assertFalse(len(self.dagbag.import_errors),
                          f'DAG loading failed. Errors: {self.dagbag.import_errors}' )
+        self.assertEqual("example_dag_with_teradata",
+                         self.dag.dag_id)
+        self.assertEqual("A simple example DAG with Teradata connection",
+                         self.dag.description)
 
     def test_task_count(self):
         self.assertEqual(len(self.dag.tasks), 3)
