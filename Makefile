@@ -14,7 +14,7 @@ $(AIRFLOW_DIR):
 
 test: $(VENV_DIR) $(AIRFLOW_DIR)
 	. $(VENV_DIR)/bin/activate && \
-	coverage run -m unittest discover -s test -p 'test_*.py' ; \
+	coverage run -m unittest discover -s tests -p 'test_*.py' ; \
 	deactivate
 
 clean:
