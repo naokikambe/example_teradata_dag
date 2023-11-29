@@ -4,7 +4,7 @@ CUR_DIR = $(shell pwd)
 VENV_DIR = $(CUR_DIR)/../../.venv
 AIRFLOW_HOME = $(CUR_DIR)/../../.airflow
 CONFIG = $(CUR_DIR)/.config/stg.json
-DAG_DIR = $(CUR_DIR)/../../dag
+DAG_DIR = $(CUR_DIR)/../../dags
 
 dag-test: $(VENV_DIR) $(AIRFLOW_HOME) $(CONFIG) $(DAG_DIR)
 	. $(VENV_DIR)/bin/activate && \
