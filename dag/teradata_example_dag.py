@@ -37,13 +37,13 @@ for dag_id, conf in configs.items():
             'start_date': datetime(2023, 1, 1),
             'email_on_failure': False,
             'email_on_retry': False,
-            'retries': conf.get("retries"),
+            'retries': conf["retries"],
             'retry_delay': timedelta(minutes=5),
         },
         dag_id=dag_id,
-        schedule_interval=conf.get("schedule_interval"),  # Run the DAG daily
-        description=conf.get("description"),
-        doc_md=conf.get("doc_md"),
+        schedule_interval=conf["schedule_interval"],  # Run the DAG daily
+        description=conf["description"],
+        doc_md=conf["doc_md"],
     )
     def generate_dag():
         task1 = DummyOperator(
