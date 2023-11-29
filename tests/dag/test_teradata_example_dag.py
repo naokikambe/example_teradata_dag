@@ -9,17 +9,17 @@ TASK_IDS = ['task1', 'task2', 'task3']
 
 class TestTeradataExampleDAG(unittest.TestCase):
     def setUp(self):
-        self.dag_folder_path = './dag'
+        self.dag_folder_path = './dags'
         if not os.path.exists(self.dag_folder_path):
             raise FileNotFoundError(f'DAGs folder not found: {self.dag_folder_path}')
         self.dagbag = DagBag(dag_folder=self.dag_folder_path,
                              include_examples=False)
         self.dag_id = 'example_dag_with_teradata'
         self.dag = self.dagbag.get_dag(self.dag_id)
-        sys.path.append("./dag")
+        sys.path.append(self.dag_folder_path)
 
     def tearDown(self):
-        sys.path.remove("./dag")
+        sys.path.remove(self.dag_folder_path)
 
     def test_dag_loaded_successfully(self):
         print(f'DAG: {self.dag}')
