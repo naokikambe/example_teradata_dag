@@ -60,7 +60,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
         mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.execute.return_value = 0
         mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.fetchall.return_value = [(1, 'data1'), (2, 'data2')]
         mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
-        self.dag.get_task("task2").python_callable(dag=self.dag)
+        self.dag.get_task("task2").python_callable(dag=self.dag, params=self.dag.get_task("task2").params)
         mock_conn.assert_called_once_with(host='your_teradata_hostname',
                                           user='your_teradata_username',
                                           password='your_teradata_password')
@@ -76,7 +76,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
         mock_conn.return_value.__enter__.return_value.cursor.return_value.__enter__.return_value.fetchall.return_value = []
         mock_open.return_value.__enter__.return_value.read.return_value = "SELECT * FROM another_table;"
         with self.assertRaises(Exception) as context:
-            self.dag.get_task("task2").python_callable(dag=self.dag)
+            self.dag.get_task("task2").python_callable(dag=self.dag, params=self.dag.get_task("task2").params)
         self.assertEquals("Teradata Query Execution Failed with Return Code: 1",
                           str(context.exception))
         mock_conn.assert_called_once_with(host='your_teradata_hostname',
