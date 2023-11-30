@@ -55,7 +55,7 @@ def teradata_query_callback(**kwargs):
         assert connection_time <= 60, "Connection time exceeds 60 seconds!"
 
         # Get the path to the SQL file using os.path.join
-        sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', 'query.sql')
+        sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', kwargs['params']['sql_file'])
         # Read SQL query from the file
         with open(sql_file_path, 'r') as sql_file:
             query = sql_file.read()
@@ -75,30 +75,34 @@ def teradata_query_callback(**kwargs):
             for row in result:
                 print(row)
 
-configs = {
+# configs object
+dag_configs = {
     "example_dag_with_teradata": {
-        "retries": 1,
         "schedule_interval": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection',
         "doc_md": read_file_content('README.md'),
+        "params": {
+            'retries': 15,
+            'params': {
+                'sql_file': "query.sql"
+            }
+        }
     },
 }
 
-for dag_id, dag_conf in configs.items():
+for dag_id, dag_conf in dag_configs.items():
     @dag(
+        dag_id=dag_id,
         default_args={
             'owner': 'airflow',
             'depends_on_past': False,
             'start_date': datetime(2023, 1, 1),
             'email_on_failure': False,
             'email_on_retry': False,
-            'retries': dag_conf["retries"],
+            'retries': 1,
             'retry_delay': timedelta(minutes=5),
         },
-        dag_id=dag_id,
-        schedule_interval=dag_conf["schedule_interval"],  # Run the DAG daily
-        description=dag_conf["description"],
-        doc_md=dag_conf["doc_md"],
+        **dag_conf,
     )
     def generate_dag():
         task1 = DummyOperator(
@@ -109,9 +113,9 @@ for dag_id, dag_conf in configs.items():
             task_id='task2',
             python_callable=teradata_query_callback,
             provide_context=True,
-            retries=15,
             retry_delay=timedelta(seconds=0),
             execution_timeout=timedelta(minutes=15),
+            **dag_conf['params'],
         )
 
         task3 = DummyOperator(
