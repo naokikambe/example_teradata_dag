@@ -73,12 +73,13 @@ def teradata_query_callback(**kwargs):
             for row in result:
                 print(row)
 
+
+
 # configs object
 dag_configs = {
     "example_dag_with_teradata": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection',
-        "doc_md": read_file_content('README.md'),
         "params": {
             'retries': 15,
             'params': {
@@ -89,7 +90,6 @@ dag_configs = {
     "example_dag_with_teradata_2": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection 2nd',
-        "doc_md": read_file_content('README.md'),
         "params": {
             'retries': 15,
             'params': {
@@ -100,7 +100,6 @@ dag_configs = {
     "example_dag_with_teradata_3": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection 3rd',
-        "doc_md": read_file_content('README.md'),
         "params": {
             'retries': 15,
             'params': {
@@ -111,7 +110,6 @@ dag_configs = {
     "example_dag_with_teradata_4": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection 4th',
-        "doc_md": read_file_content('README.md'),
         "params": {
             'retries': 15,
             'params': {
@@ -122,7 +120,7 @@ dag_configs = {
 }
 
 for dag_id, dag_conf in dag_configs.items():
-    from airflow.decorators import dag
+    from airflow.decorators import dag, task
 
     @dag(
         dag_id=dag_id,
@@ -135,6 +133,7 @@ for dag_id, dag_conf in dag_configs.items():
             'retries': 1,
             'retry_delay': timedelta(minutes=5),
         },
+        doc_md=read_file_content('README.md'),
         **dag_conf,
     )
     def generate_dag():
@@ -142,13 +141,16 @@ for dag_id, dag_conf in dag_configs.items():
             task_id='task1',
         )
 
-        task2 = PythonOperator(
+        @task(
             task_id='task2',
-            python_callable=teradata_query_callback,
             retry_delay=timedelta(seconds=0),
             execution_timeout=timedelta(minutes=15),
             **dag_conf['params'],
         )
+        def task2_cb(**kwargs):
+            teradata_query_callback(**kwargs)
+
+        task2 = task2_cb()    
 
         task3 = EmptyOperator(
             task_id='task3',
