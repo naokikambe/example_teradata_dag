@@ -7,6 +7,8 @@ from airflow.models import DagBag
 
 TASK_IDS = ['task1', 'task2', 'task3']
 
+DAG_ID = 'example_dag_with_teradata'
+
 class TestTeradataExampleDAG(unittest.TestCase):
     def setUp(self):
         self.dag_folder_path = './dags'
@@ -14,7 +16,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
             raise FileNotFoundError(f'DAGs folder not found: {self.dag_folder_path}')
         self.dagbag = DagBag(dag_folder=self.dag_folder_path,
                              include_examples=False)
-        self.dag_id = 'example_dag_with_teradata'
+        self.dag_id = DAG_ID
         self.dag = self.dagbag.get_dag(self.dag_id)
         sys.path.append(self.dag_folder_path)
 
@@ -26,8 +28,7 @@ class TestTeradataExampleDAG(unittest.TestCase):
         self.assertIsNotNone(self.dag, 'DAG is None. Loading failed.')
         self.assertFalse(len(self.dagbag.import_errors),
                          f'DAG loading failed. Errors: {self.dagbag.import_errors}' )
-        self.assertEqual("example_dag_with_teradata",
-                         self.dag.dag_id)
+        self.assertEqual(DAG_ID, self.dag.dag_id)
         self.assertEqual("A simple example DAG with Teradata connection",
                          self.dag.description)
 
