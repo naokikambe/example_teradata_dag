@@ -7,8 +7,8 @@ from airflow.models import DagBag
 
 TASK_IDS = ['task1', 'task2', 'task3']
 
-DAG_ID = 'example_dag_with_teradata'
-DAG_DESC = 'A simple example DAG with Teradata connection'
+DAG_ID = 'example_dag_with_teradata_3'
+DAG_DESC = 'A simple example DAG with Teradata connection 3rd'
 
 class TestTeradataExampleDAG(unittest.TestCase):
     def setUp(self):

@@ -11,9 +11,8 @@ The DAG runs daily and is configured with default parameters.
 
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.decorators import dag
-from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import PythonOperator
 
 import sys
 import os
@@ -44,7 +43,6 @@ def teradata_query_callback(**kwargs):
 
     start_time = time.time()
     dag_id = kwargs['dag'].dag_id
-    assert dag_id == 'example_dag_with_teradata', "check dag id"
     # Connect to Teradata using "with" statement
     with teradatasql.connect(host=host, user=login, password=password) as connection:
         end_time = time.time()
@@ -78,8 +76,41 @@ def teradata_query_callback(**kwargs):
 # configs object
 dag_configs = {
     "example_dag_with_teradata": {
-        "schedule_interval": timedelta(minutes=5),
+        "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection',
+        "doc_md": read_file_content('README.md'),
+        "params": {
+            'retries': 15,
+            'params': {
+                'sql_file': "query.sql"
+            }
+        }
+    },
+    "example_dag_with_teradata_2": {
+        "schedule": timedelta(minutes=5),
+        "description": 'A simple example DAG with Teradata connection 2nd',
+        "doc_md": read_file_content('README.md'),
+        "params": {
+            'retries': 15,
+            'params': {
+                'sql_file': "query.sql"
+            }
+        }
+    },
+    "example_dag_with_teradata_3": {
+        "schedule": timedelta(minutes=5),
+        "description": 'A simple example DAG with Teradata connection 3rd',
+        "doc_md": read_file_content('README.md'),
+        "params": {
+            'retries': 15,
+            'params': {
+                'sql_file': "query.sql"
+            }
+        }
+    },
+    "example_dag_with_teradata_4": {
+        "schedule": timedelta(minutes=5),
+        "description": 'A simple example DAG with Teradata connection 4th',
         "doc_md": read_file_content('README.md'),
         "params": {
             'retries': 15,
@@ -91,6 +122,8 @@ dag_configs = {
 }
 
 for dag_id, dag_conf in dag_configs.items():
+    from airflow.decorators import dag
+
     @dag(
         dag_id=dag_id,
         default_args={
@@ -105,20 +138,19 @@ for dag_id, dag_conf in dag_configs.items():
         **dag_conf,
     )
     def generate_dag():
-        task1 = DummyOperator(
+        task1 = EmptyOperator(
             task_id='task1',
         )
 
         task2 = PythonOperator(
             task_id='task2',
             python_callable=teradata_query_callback,
-            provide_context=True,
             retry_delay=timedelta(seconds=0),
             execution_timeout=timedelta(minutes=15),
             **dag_conf['params'],
         )
 
-        task3 = DummyOperator(
+        task3 = EmptyOperator(
             task_id='task3',
         )
 
