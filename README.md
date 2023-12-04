@@ -1,12 +1,14 @@
 # Example Airflow DAG
 
+[![codecov](https://codecov.io/github/naokikambe/teradata_example_dag/graph/badge.svg?token=G87WISEA48)](https://codecov.io/github/naokikambe/teradata_example_dag)
+
 ## Description
 
-Example Airflow DAG is an example Apache Airflow project that demonstrates how to create a DAG with tasks connecting to a Teradata database.
+Example Airflow DAG is a sample Apache Airflow project demonstrating the creation of a DAG with tasks connecting to a Teradata database.
 
 ## Prerequisites
 
-Before you begin, ensure you have met the following requirements:
+Before you begin, make sure you have met the following requirements:
 
 - Python 3.x
 - Apache Airflow installed
@@ -43,7 +45,7 @@ The main DAG (`teradata_example_dag.py`) in this project consists of the followi
 
 ## Usage
 
-1. Make sure your Apache Airflow instance is running.
+1. Ensure your Apache Airflow instance is running.
 
 2. Copy the `teradata_example_dag.py` file to your Airflow DAGs folder.
 
@@ -67,9 +69,12 @@ To contribute to Example Airflow DAG, follow these steps:
 
 ## Contact
 
-If you have any questions or feedback, please feel free to reach out to [your.email@example.com](mailto:your.email@example.com).
+If you have any questions or feedback, feel free to reach out to [your.email@example.com](mailto:your.email@example.com).
 
 ## Acknowledgements
 
 - [Apache Airflow](https://airflow.apache.org/)
 - [Teradata](https://www.teradata.com/)
+```
+
+These changes mainly focus on improving the readability and consistency of the text. Feel free to adjust it further based on your preferences.
