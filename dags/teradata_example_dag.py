@@ -24,77 +24,76 @@ def read_file_content(file_name):
     with open(file_path, 'r') as file:
         return file.read()
 
-
-
+# default args
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'start_date': datetime(2023, 1, 1),
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+    'execution_timeout': timedelta(minutes=15),
+}
 
 # configs object
 dag_configs = {
     "example_dag_with_teradata": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection',
-        "params": {
+        "default_args": {
             'retries': 15,
-            'params': {
-                'sql_file': "query.sql"
-            }
-        }
+        },
+        "params": {
+            'sql_file': "query.sql",
+        },
     },
     "example_dag_with_teradata_2": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection 2nd',
-        "params": {
+        "default_args": {
             'retries': 15,
-            'params': {
-                'sql_file': "query.sql"
-            }
-        }
+        },
+        "params": {
+            'sql_file': "query.sql",
+        },
     },
     "example_dag_with_teradata_3": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection 3rd',
-        "params": {
+        "default_args": {
             'retries': 15,
-            'params': {
-                'sql_file': "query.sql"
-            }
-        }
+        },
+        "params": {
+            'sql_file': "query.sql",
+        },
     },
     "example_dag_with_teradata_4": {
         "schedule": timedelta(minutes=5),
         "description": 'A simple example DAG with Teradata connection 4th',
-        "params": {
+        "default_args": {
             'retries': 15,
-            'params': {
-                'sql_file': "query.sql"
-            }
-        }
+        },
+        "params": {
+            'sql_file': "query.sql",
+        },
     },
 }
 
 for dag_id, dag_conf in dag_configs.items():
     from airflow.decorators import dag, task
 
+    tmp_args = default_args.copy()
+    tmp_args.update(dag_conf['default_args'])
+    dag_conf['default_args'] = tmp_args
+
     @dag(
         dag_id=dag_id,
-        default_args={
-            'owner': 'airflow',
-            'depends_on_past': False,
-            'start_date': datetime(2023, 1, 1),
-            'email_on_failure': False,
-            'email_on_retry': False,
-            'retries': 1,
-            'retry_delay': timedelta(minutes=5),
-        },
         doc_md=read_file_content('README.md'),
         **dag_conf,
     )
     def generate_dag():
-        @task(
-            task_id='task2',
-            retry_delay=timedelta(seconds=0),
-            execution_timeout=timedelta(minutes=15),
-            **dag_conf['params'],
-        )
+        @task(task_id='task2')
         def teradata_query_callback(**kwargs):
             """
             teradata_query_callback(**kwargs)
