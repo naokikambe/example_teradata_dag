@@ -32,7 +32,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(seconds=0),
     'execution_timeout': timedelta(minutes=15),
 }
 
@@ -83,9 +83,9 @@ dag_configs = {
 for dag_id, dag_conf in dag_configs.items():
     from airflow.decorators import dag, task
 
-    tmp_args = default_args.copy()
-    tmp_args.update(dag_conf['default_args'])
-    dag_conf['default_args'] = tmp_args
+    tmp = default_args.copy()
+    tmp.update(dag_conf['default_args'])
+    dag_conf['default_args'] = tmp
 
     @dag(
         dag_id=dag_id,
