@@ -19,63 +19,65 @@ import os
 import teradatasql
 import time
 
+
 def read_file_content(file_name):
     file_path = os.path.join(os.path.dirname(__file__), file_name)
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         return file.read()
+
 
 # default args
 default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'start_date': datetime(2023, 1, 1),
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(seconds=0),
-    'execution_timeout': timedelta(minutes=15),
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": datetime(2023, 1, 1),
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 1,
+    "retry_delay": timedelta(seconds=0),
+    "execution_timeout": timedelta(minutes=15),
 }
 
 # configs object
 dag_configs = {
     "example_dag_with_teradata": {
         "schedule": timedelta(minutes=5),
-        "description": 'A simple example DAG with Teradata connection',
+        "description": "A simple example DAG with Teradata connection",
         "default_args": {
-            'retries': 15,
+            "retries": 15,
         },
         "params": {
-            'sql_file': "query.sql",
+            "sql_file": "query.sql",
         },
     },
     "example_dag_with_teradata_2": {
         "schedule": timedelta(minutes=5),
-        "description": 'A simple example DAG with Teradata connection 2nd',
+        "description": "A simple example DAG with Teradata connection 2nd",
         "default_args": {
-            'retries': 15,
+            "retries": 15,
         },
         "params": {
-            'sql_file': "query.sql",
+            "sql_file": "query.sql",
         },
     },
     "example_dag_with_teradata_3": {
         "schedule": timedelta(minutes=5),
-        "description": 'A simple example DAG with Teradata connection 3rd',
+        "description": "A simple example DAG with Teradata connection 3rd",
         "default_args": {
-            'retries': 15,
+            "retries": 15,
         },
         "params": {
-            'sql_file': "query.sql",
+            "sql_file": "query.sql",
         },
     },
     "example_dag_with_teradata_4": {
         "schedule": timedelta(minutes=5),
-        "description": 'A simple example DAG with Teradata connection 4th',
+        "description": "A simple example DAG with Teradata connection 4th",
         "default_args": {
-            'retries': 15,
+            "retries": 15,
         },
         "params": {
-            'sql_file': "query.sql",
+            "sql_file": "query.sql",
         },
     },
 }
@@ -84,16 +86,16 @@ for dag_id, dag_conf in dag_configs.items():
     from airflow.decorators import dag, task
 
     tmp = default_args.copy()
-    tmp.update(dag_conf['default_args'])
-    dag_conf['default_args'] = tmp
+    tmp.update(dag_conf["default_args"])
+    dag_conf["default_args"] = tmp
 
     @dag(
         dag_id=dag_id,
-        doc_md=read_file_content('README.md'),
+        doc_md=read_file_content("README.md"),
         **dag_conf,
     )
     def generate_dag():
-        @task(task_id='task2')
+        @task(task_id="task2")
         def teradata_query_callback(**kwargs):
             """
             teradata_query_callback(**kwargs)
@@ -107,14 +109,16 @@ for dag_id, dag_conf in dag_configs.items():
                 None
             """
             # Directly assign Teradata connection details
-            login = 'your_teradata_username'
-            password = 'your_teradata_password'
-            host = 'your_teradata_hostname'
+            login = "your_teradata_username"
+            password = "your_teradata_password"
+            host = "your_teradata_hostname"
 
             start_time = time.time()
-            dag_id = kwargs['dag'].dag_id
+            dag_id = kwargs["dag"].dag_id
             # Connect to Teradata using "with" statement
-            with teradatasql.connect(host=host, user=login, password=password) as connection:
+            with teradatasql.connect(
+                host=host, user=login, password=password
+            ) as connection:
                 end_time = time.time()
                 connection_time = end_time - start_time
                 # Log connection time
@@ -123,9 +127,11 @@ for dag_id, dag_conf in dag_configs.items():
                 assert connection_time <= 60, "Connection time exceeds 60 seconds!"
 
                 # Get the path to the SQL file using os.path.join
-                sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'sql', kwargs['params']['sql_file'])
+                sql_file_path = os.path.join(
+                    os.path.dirname(__file__), "..", "sql", kwargs["params"]["sql_file"]
+                )
                 # Read SQL query from the file
-                with open(sql_file_path, 'r') as sql_file:
+                with open(sql_file_path, "r") as sql_file:
                     query = sql_file.read()
 
                 # Execute a SQL query
@@ -136,16 +142,18 @@ for dag_id, dag_conf in dag_configs.items():
                     print(f"Teradata Return Code: {return_code}")
 
                     # Assert that the return code is zero
-                    assert return_code == 0, f"Teradata Query Execution Failed with Return Code: {return_code}"
+                    assert (
+                        return_code == 0
+                    ), f"Teradata Query Execution Failed with Return Code: {return_code}"
 
                     # Log the result
                     result = cursor.fetchall()
                     for row in result:
                         print(row)
 
-        task1 = EmptyOperator(task_id='task1')
-        task2 = teradata_query_callback()    
-        task3 = EmptyOperator(task_id='task3')
+        task1 = EmptyOperator(task_id="task1")
+        task2 = teradata_query_callback()
+        task3 = EmptyOperator(task_id="task3")
 
         # Set up the task dependencies
         task1 >> task2  # task2 depends on task1
